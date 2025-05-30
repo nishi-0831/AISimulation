@@ -10,12 +10,14 @@
 
 namespace
 {
-	int dirArray[(int)DIR::MAX_DIR] = { 3,0,1,2,0 };
-	int animFrame[4]{ 0,1,2,1 };
-	const int IMAGE_SIZE = 48;
-	int nowFrame = 0;
 	static float timer = 0;
-	float interval = 1.0f;
+	float moveInterval = 0.1f;
+
+	//const int IMAGE_SIZE = 48;
+	//int nowFrame_ = 0;
+	
+	//int animFrame_[4]{ 0,1,2,1 };
+	//float animInterval = 0.3f;
 	/*
 	int keyArray[4] = { KEY_INPUT_W ,KEY_INPUT_S,KEY_INPUT_A ,KEY_INPUT_D };
 	Point moveDirArray[(int)DIR::MAX_DIR] = {
@@ -30,10 +32,28 @@ namespace
 Enemy::Enemy()
 	:GameObject2D(),tile_({4,4}),  hImage_{-1}
 {
-	pos_ =Point({ tile_.x * CHA_SIZE,tile_.y * CHA_SIZE });
-	srand((unsigned int)time(NULL)); // 現在時刻の情報で初期化
+	imageSize_ = 48;
+	dirArray_ = { 3,0,1,2,0 };
+	animTip_ = { 0,1,2,1 }; // アニメーションのコマ番号
+	animTimer_ = 0;
 	hImage_ = LoadGraph("Assets/mogu.png");
-	//hImage_ = LoadDivGraph()
+	srand((unsigned int)time(NULL)); // 現在時刻の情報で初期化
+
+
+	//tile_.x = GetRand(STAGE_WIDTH - 1)-1;
+	//tile_.y = GetRand(STAGE_HEIGHT - 1)-1;
+	//STAGE_WIDTHで割ったら
+	//0から38
+	//+1して1から39
+	//STAGE_WIDTH-1(38)で割ったら0~37 1足せば1から38
+
+	tile_.x = GetRand(RAND_MAX) % (STAGE_WIDTH-1) + 1;
+	tile_.y = GetRand(RAND_MAX) % (STAGE_HEIGHT-1) + 1;
+
+	pos_ = Point({ tile_.x * CHA_SIZE,tile_.y * CHA_SIZE });
+
+	nowDir_ = DIR::LEFT;
+	
 	assert(hImage_ > 0);
 }
 
@@ -43,79 +63,72 @@ Enemy::~Enemy()
 
 void Enemy::SetDir()
 {
-	nowDir = (DIR)(rand() % (int)DIR::MAX_DIR);
+	//nowDir_ = (DIR)(rand() % (int)DIR::MAX_DIR);
+	//TurnLeft();
+}
+
+
+
+void Enemy::Anim()
+{
+	animTimer_ += Time::DeltaTime();
+	if (animTimer_ >= animInterval_)
+	{
+		index_ = index_ % 4;
+		nowFrame_ = animTip_[index_];
+		animTimer_ -= animInterval_;
+		index_++;
+	}
+
+#if 0
+	timer += Time::DeltaTime();
+
+
+	if (timer >= moveInterval)
+	{
+		SetDir();
+		Move();
+		timer = timer - moveInterval;
+	}
+# endif
 }
 
 void Enemy::Move()
 {
-	//bool flag = false;
-	//while (!flag)
-	//{
-	//	Point tileCopy = tile_;
-	//	tileCopy.x += moveDirArray[nowDir].x;
-	//	tileCopy.y += moveDirArray[nowDir].y;
-	//	//外枠ならもう一回
-	//	if (tileCopy.x == 0 || tileCopy.x == STAGE_WIDTH - 1 || tileCopy.y == 0 || tileCopy.y == STAGE_HEIGHT - 1)
-	//	{
-	//		flag = false;
-	//		SetDir();
-	//	}
-	//	else
-	//	{
-	//		tile_ = tileCopy;
-	//		flag = true;
-	//	}
-	//}
+	bool flag = false;
+	while (!flag)
+	{
+		Point tileCopy = tile_;
+		tileCopy.x += moveDirArray[nowDir_].x;
+		tileCopy.y += moveDirArray[nowDir_].y;
+		//外枠ならもう一回
+		if (IsOutOfStage(tileCopy.x, tileCopy.y))
+		{
+			flag = false;
+			//SetDir();
+			TurnLeft();
+		}
+		else
+		{
+			tile_ = tileCopy;
+			flag = true;
+		}
+	}
 
-	//pos_.x = tile_.x * CHA_SIZE;
-	//pos_.y = tile_.y * CHA_SIZE;
+	pos_.x = tile_.x * CHA_SIZE;
+	pos_.y = tile_.y * CHA_SIZE;
 }
 
 void Enemy::Update()
 {
-	static float animTimer = 0;
-	
-	float animInterval = 0.3f;
-	static int i=0;
-	animTimer += Time::DeltaTime();
-	if (animTimer >= animInterval)
-	{
-		i = i % 4;
-		nowFrame = animFrame[i];
-		animTimer -= animInterval;
-		i++;
-	}
-
-	
+	Anim();
 	timer += Time::DeltaTime();
 
-
-	if (timer >= interval)
+	if (timer >= moveInterval)
 	{
-		nowDir = (DIR)(rand() % (int)DIR::MAX_DIR);
-		bool flag = false;
-		while (!flag)
-		{
-			Point tileCopy = tile_;
-			tileCopy.x += moveDirArray[nowDir].x;
-			tileCopy.y += moveDirArray[nowDir].y;
-			//外枠ならもう一回
-			if (tileCopy.x == 0 || tileCopy.x == STAGE_WIDTH - 1 || tileCopy.y == 0 || tileCopy.y == STAGE_HEIGHT - 1)
-			{
-				flag = false;
-				nowDir = (DIR)(rand() % (int)DIR::MAX_DIR);
-			}
-			else
-			{
-				tile_ = tileCopy;
-				flag = true;
-			}
-		}
-		
-		pos_.x = tile_.x * CHA_SIZE;
-		pos_.y = tile_.y * CHA_SIZE;
-		
-		timer = timer -interval;
+		SetDir();
+		Move();
+		timer = timer -moveInterval;
 	}
 
 	
@@ -125,5 +138,5 @@ void Enemy::Draw()
 {
 	//縦48 ,横48
 	Rect rect{ pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE };
-	DrawRectExtendGraph(pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE, animFrame[nowFrame] * IMAGE_SIZE, dirArray[nowDir] * IMAGE_SIZE, IMAGE_SIZE, IMAGE_SIZE, hImage_, TRUE);
+	DrawRectExtendGraph(pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE, animTip_[nowFrame_] * imageSize_, dirArray_[nowDir_] * imageSize_, imageSize_, imageSize_, hImage_, TRUE);
 }
