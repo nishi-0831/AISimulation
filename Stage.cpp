@@ -18,7 +18,7 @@ void Stage::Update()
 void Stage::Draw()
 {
 	//外枠の描画
-	DrawBox(0, 0, CHA_SIZE * (STAGE_WIDTH - 1), CHA_SIZE * (STAGE_HEIGHT-1), GetColor(0, 155, 255), false,7);
+	//DrawBox(0, 0, CHA_SIZE * (STAGE_WIDTH - 1), CHA_SIZE * (STAGE_HEIGHT-1), GetColor(0, 155, 255), false,7);
 
 
 	//ステージの描画
