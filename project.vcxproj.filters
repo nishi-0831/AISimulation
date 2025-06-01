@@ -55,6 +55,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject2D.cpp" />
+    <ClCompile Include="ImGuiSample.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject2D.h" />
+    <ClInclude Include="ImGuiSample.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

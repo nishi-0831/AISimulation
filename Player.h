@@ -15,5 +15,6 @@ public:
 	void SetDir() override;
 	void Move() override;
 	void Draw() override;
+	Point GetTilePos() { return tile_; }
 };
 

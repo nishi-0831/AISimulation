@@ -13,21 +13,6 @@ namespace
 	static float timer = 0;
 	float moveInterval = 0.1f;
 
-	//const int IMAGE_SIZE = 48;
-	//int nowFrame_ = 0;
-	
-	//int animFrame_[4]{ 0,1,2,1 };
-	//float animInterval = 0.3f;
-	/*
-	int keyArray[4] = { KEY_INPUT_W ,KEY_INPUT_S,KEY_INPUT_A ,KEY_INPUT_D };
-	Point moveDirArray[(int)DIR::MAX_DIR] = {
-		{0,-1},
-		{0,1},
-		{-1,0},
-		{1,0},
-		{0,0}
-	};
-	DIR nowDir = DIR::LEFT;*/
 }
 Enemy::Enemy()
 	:GameObject2D(),tile_({4,4}),  hImage_{-1}
@@ -39,7 +24,7 @@ Enemy::Enemy()
 	hImage_ = LoadGraph("Assets/mogu.png");
 	srand((unsigned int)time(NULL)); // åªç›éûçèÇÃèÓïÒÇ≈èâä˙âª
 
-
+	
 	//tile_.x = GetRand(STAGE_WIDTH - 1)-1;
 	//tile_.y = GetRand(STAGE_HEIGHT - 1)-1;
 	//STAGE_WIDTHÇ≈äÑÇ¡ÇΩÇÁ
