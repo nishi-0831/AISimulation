@@ -7,16 +7,58 @@
 #include <time.h>
 #include "time.h"
 #include "global.h"
+#include "Player.h"
+#include "RouteSearch.h"
+#include <vector>
 
+#define test 1
 namespace
 {
+	static float chaseTime = 0;
 	static float timer = 0;
 	float moveInterval = 0.1f;
+	const int THRESHOLD_DIST = 30;
+	Player* p;
+	std::vector<Point> route;
 
+	Point mark;
+}
+void Enemy::UpdateNormal()
+{
+	SetDir();
+	Move();
+	//プレイヤーとのマンハッタン距離がTHRESHOLD_DISTより小さくなったら
+	int manhattanDistance = Point::ManhattanDistance(tile_, p->GetTilePos());
+	if (manhattanDistance < THRESHOLD_DIST)
+	{
+		state_ = ESTATE::CHASE;
+	}
+}
+void Enemy::UpdateChase()
+{
+	//10秒以内に追いつかなかったらNORMALに戻る
+	chaseTime += Time::DeltaTime();
+	if (chaseTime >= 10)
+	{
+		state_ = ESTATE::NORMAL;
+	}
+#if test
+	routeSearch->SetStartTile(tile_);
+	routeSearch->SetEndTile(p->GetTilePos());
+	//route =routeSearch->CalculateRoute();
+
+	mark = routeSearch->CalculateRoute();
+	tile_ = mark;
+#endif
+}
+void Enemy::UpdateEscape()
+{
 }
 Enemy::Enemy()
 	:GameObject2D(),tile_({4,4}),  hImage_{-1}
 {
+	routeSearch = new RouteSearch();
+	p = (Player*)FindGameObject<Player>();
 	imageSize_ = 48;
 	dirArray_ = { 3,0,1,2,0 };
 	animTip_ = { 0,1,2,1 }; // アニメーションのコマ番号
@@ -24,13 +66,6 @@ Enemy::Enemy()
 	hImage_ = LoadGraph("Assets/mogu.png");
 	srand((unsigned int)time(NULL)); // 現在時刻の情報で初期化
 
-	
-	//tile_.x = GetRand(STAGE_WIDTH - 1)-1;
-	//tile_.y = GetRand(STAGE_HEIGHT - 1)-1;
-	//STAGE_WIDTHで割ったら
-	//0から38
-	//+1して1から39
-	//STAGE_WIDTH-1(38)で割ったら0~37 1足せば1から38
 
 	tile_.x = GetRand(RAND_MAX) % (STAGE_WIDTH-1) + 1;
 	tile_.y = GetRand(RAND_MAX) % (STAGE_HEIGHT-1) + 1;
@@ -65,22 +100,13 @@ void Enemy::Anim()
 		index_++;
 	}
 
-#if 0
-	timer += Time::DeltaTime();
 
-
-	if (timer >= moveInterval)
-	{
-		SetDir();
-		Move();
-		timer = timer - moveInterval;
-	}
-# endif
 }
 
 void Enemy::Move()
 {
 	bool flag = false;
+#if 1
 	while (!flag)
 	{
 		Point tileCopy = tile_;
@@ -99,7 +125,12 @@ void Enemy::Move()
 			flag = true;
 		}
 	}
+#endif
 
+#if test
+	
+#endif
+	
 	pos_.x = tile_.x * CHA_SIZE;
 	pos_.y = tile_.y * CHA_SIZE;
 }
@@ -108,14 +139,35 @@ void Enemy::Update()
 {
 	Anim();
 	timer += Time::DeltaTime();
-
+	//mark = tile_;
+#if 1
+	if (timer >= moveInterval)
+	{
+		switch (state_)
+		{
+		case ESTATE::NORMAL:
+			UpdateNormal();
+			break;
+		case ESTATE::CHASE:
+			UpdateChase();
+			break;
+		case ESTATE::ESCAPE:
+			UpdateEscape();
+			break;
+		default:
+			return;
+		}
+		timer = timer - moveInterval;
+	}
+#else
 	if (timer >= moveInterval)
 	{
 		SetDir();
 		Move();
-		timer = timer -moveInterval;
+		timer = timer - moveInterval;
 	}
-
+#endif
+	
 	
 }
 

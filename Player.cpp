@@ -57,7 +57,7 @@ void Player::SetDir()
 	{
 		if (Input::IsKeyDown(keyArray[i]))
 		{
-			move = Add(move, moveDirArray[i]);
+			move = Point::Add(move, moveDirArray[i]);
 			nowDir_ = (DIR)i;
 		}
 		//‰½‚à‚µ‚È‚¢‚Æ‚«A‰Ÿ‚µ‚Ä‚È‚¢‚Æ‚«‚Ìˆ—‚à“ü‚ê‚½‚Ù‚¤‚¢‚¢
@@ -76,7 +76,7 @@ void Player::Move()
 	{
 		move = Point({ 0,0 });
 	}
-	tile_ = Add(tile_, move);
+	tile_ = Point::Add(tile_, move);
 
 	pos_.x = tile_.x * CHA_SIZE;
 	pos_.y = tile_.y * CHA_SIZE;

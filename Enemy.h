@@ -2,13 +2,29 @@
 #include "Library/GameObject.h"
 #include "GameObject2D.h"
 #include "global.h"
+
+class RouteSearch;
+namespace
+{
+	enum ESTATE
+	{
+		NORMAL,
+		CHASE,
+		ESCAPE,
+		MAX_ESTATE
+	};
+}
 class Enemy :
 	public GameObject2D
 {
 	Point pos_;
 	int hImage_;
 	Point tile_;
-
+	void UpdateNormal();
+	void UpdateChase();
+	void UpdateEscape();
+	RouteSearch* routeSearch;
+	ESTATE state_ = ESTATE::NORMAL; // åªç›ÇÃèÛë‘
 public:
 	Enemy();
 	~Enemy();

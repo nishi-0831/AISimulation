@@ -1,7 +1,6 @@
 #pragma once
+#include <cmath>
 
-namespace
-{
 
 
 	//二次元ベクトル(整数)
@@ -9,15 +8,30 @@ namespace
 	{
 		int x;
 		int y;
+		//aとbを足すよ
+		static Point Add(Point a, Point b)
+		{
+			a.x += b.x;
+			a.y += b.y;
+			return a;
+		}
+		//aからbを引くよ
+		static Point Sub(Point a, Point b)
+		{
+			a.x -= b.x;
+			a.y -= b.y;
+			return a;
+		}
+
+		static int ManhattanDistance(Point a, Point b)
+		{
+			//2点 (x1, y1) と (x2, y2) 間のマンハッタン距離は、
+			// |x1 - x2| + |y1 - y2| で計算されます
+			return abs(a.x - b.x) + abs(a.y - b.y);
+		}
+
 	};
-
-	inline Point Add(Point a, Point b)
-	{
-		a.x += b.x;
-		a.y += b.y;
-		return a;
-	}
-
+	
 	//二次元ベクトル(浮動小数点数)
 	struct Pointf
 	{
@@ -58,4 +72,3 @@ namespace
 
 	const int STAGE_WIDTH = 39;
 	const int STAGE_HEIGHT = 21;
-}
