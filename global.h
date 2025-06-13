@@ -22,7 +22,10 @@
 			a.y -= b.y;
 			return a;
 		}
-
+		static bool Equal(Point a, Point b)
+		{
+			return (a.x == b.x && a.y == b.y);
+		}
 		static int ManhattanDistance(Point a, Point b)
 		{
 			//2点 (x1, y1) と (x2, y2) 間のマンハッタン距離は、

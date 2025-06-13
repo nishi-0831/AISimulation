@@ -29,7 +29,7 @@ public:
 	Enemy();
 	~Enemy();
 	void SetDir() override;
-	
+	void SetDir(Point movement);
 	void Anim() override;
 	void Move() override;
 	void Update() override;

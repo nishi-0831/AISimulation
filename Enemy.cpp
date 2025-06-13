@@ -10,18 +10,21 @@
 #include "Player.h"
 #include "RouteSearch.h"
 #include <vector>
+#include "ImGui/imgui.h"
 
 #define test 1
 namespace
 {
-	static float chaseTime = 0;
+	static float chaseTimer = 0;
+	static float escapeTimer = 0;
 	static float timer = 0;
-	float moveInterval = 0.1f;
+	float moveInterval = 0.7f;
+	float chaseInterval = 0.5f;
+	float escapeInterval = 0.3f;
 	const int THRESHOLD_DIST = 30;
 	Player* p;
 	std::vector<Point> route;
-
-	Point mark;
+	const char* text;
 }
 void Enemy::UpdateNormal()
 {
@@ -36,23 +39,30 @@ void Enemy::UpdateNormal()
 }
 void Enemy::UpdateChase()
 {
-	//10秒以内に追いつかなかったらNORMALに戻る
-	chaseTime += Time::DeltaTime();
-	if (chaseTime >= 10)
-	{
-		state_ = ESTATE::NORMAL;
-	}
+	
 #if test
 	routeSearch->SetStartTile(tile_);
 	routeSearch->SetEndTile(p->GetTilePos());
 	//route =routeSearch->CalculateRoute();
 
-	mark = routeSearch->CalculateRoute();
-	tile_ = mark;
+	Point movement = routeSearch->GetMovement();
+	tile_ = Point::Add(tile_, movement);
+	SetDir(movement);
+
+
 #endif
 }
 void Enemy::UpdateEscape()
 {
+	
+	//プレイヤーとのマンハッタン距離がTHRESHOLD_DISTより小さくなったら
+	int manhattanDistance = Point::ManhattanDistance(tile_, p->GetTilePos());
+	if (manhattanDistance < 10)
+	{
+		Point movement = routeSearch->GetMovement();
+		tile_ = Point::Sub(tile_, movement);
+		SetDir(Point{ -movement.x,-movement.y });
+	}
 }
 Enemy::Enemy()
 	:GameObject2D(),tile_({4,4}),  hImage_{-1}
@@ -85,6 +95,18 @@ void Enemy::SetDir()
 {
 	//nowDir_ = (DIR)(rand() % (int)DIR::MAX_DIR);
 	//TurnLeft();
+}
+
+void Enemy::SetDir(Point movement)
+{
+	for (int i = 0;i < (int)DIR::MAX_DIR; i++)
+	{
+		if (Point::Equal(movement, moveDirArray[i]))
+		{
+			nowDir_ = (DIR)i;
+			return;
+		}
+	}
 }
 
 
@@ -127,12 +149,9 @@ void Enemy::Move()
 	}
 #endif
 
-#if test
+
 	
-#endif
 	
-	pos_.x = tile_.x * CHA_SIZE;
-	pos_.y = tile_.y * CHA_SIZE;
 }
 
 void Enemy::Update()
@@ -141,24 +160,55 @@ void Enemy::Update()
 	timer += Time::DeltaTime();
 	//mark = tile_;
 #if 1
-	if (timer >= moveInterval)
-	{
+	
 		switch (state_)
 		{
 		case ESTATE::NORMAL:
-			UpdateNormal();
+			if (timer >= moveInterval)
+			{
+				UpdateNormal();
+				timer = 0.0f;
+			}
+			text = "NORMAL";
 			break;
 		case ESTATE::CHASE:
-			UpdateChase();
+			text = "CHASE";
+			// 10秒以内に追いつかなかったらNORMALに戻る
+				chaseTimer += Time::DeltaTime();
+			if (chaseTimer >= 4)
+			{
+				state_ = ESTATE::ESCAPE;
+				chaseTimer = 0.0f;
+			}
+			if (timer >= chaseInterval)
+			{
+				UpdateChase();
+				timer = 0.0f;
+			}
 			break;
 		case ESTATE::ESCAPE:
-			UpdateEscape();
+			text = "ESCAPE";
+			escapeTimer += Time::DeltaTime();
+			if (escapeTimer >= 4)
+			{
+				state_ = ESTATE::NORMAL;
+				escapeTimer = 0.0f;
+			}
+			if (timer >= escapeInterval)
+			{
+				UpdateEscape();
+				timer = 0.0f;
+			}
+			
 			break;
 		default:
 			return;
 		}
-		timer = timer - moveInterval;
-	}
+
+		pos_.x = tile_.x * CHA_SIZE;
+		pos_.y = tile_.y * CHA_SIZE;
+		//timer = timer - moveInterval;
+	
 #else
 	if (timer >= moveInterval)
 	{
@@ -176,4 +226,8 @@ void Enemy::Draw()
 	//縦48 ,横48
 	Rect rect{ pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE };
 	DrawRectExtendGraph(pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE, animTip_[nowFrame_] * imageSize_, dirArray_[nowDir_] * imageSize_, imageSize_, imageSize_, hImage_, TRUE);
+
+	ImGui::Begin("state");
+	ImGui::Text("%s", text);
+	ImGui::End();
 }

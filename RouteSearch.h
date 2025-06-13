@@ -20,5 +20,6 @@ public:
     void SetStartTile(Point startTile);
     void SetEndTile(Point endTile);
     Point CalculateRoute();
+    Point GetMovement();
 };
 
