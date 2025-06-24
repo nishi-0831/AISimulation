@@ -11,7 +11,7 @@
 #include "RouteSearch.h"
 #include <vector>
 #include "ImGui/imgui.h"
-
+#include "Stage.h"
 #define test 1
 namespace
 {
@@ -25,6 +25,8 @@ namespace
 	Player* p;
 	std::vector<Point> route;
 	const char* text;
+
+	//Point escapePoint{10,10};
 }
 void Enemy::UpdateNormal()
 {
@@ -39,14 +41,20 @@ void Enemy::UpdateNormal()
 }
 void Enemy::UpdateChase()
 {
-	
+	if (p->GetTilePos().x == escapePoint.x)
+	{
+		if (p->GetTilePos().y == escapePoint.y)
+		{
+			state_ = ESTATE::ESCAPE;
+		}
+	}
 #if test
 	routeSearch->SetStartTile(tile_);
 	routeSearch->SetEndTile(p->GetTilePos());
-	//route =routeSearch->CalculateRoute();
 
 	Point movement = routeSearch->GetMovement();
 	tile_ = Point::Add(tile_, movement);
+	route = routeSearch->CalculateRoute();
 	SetDir(movement);
 
 
@@ -175,7 +183,7 @@ void Enemy::Update()
 			text = "CHASE";
 			// 10ïbà»ì‡Ç…í«Ç¢Ç¬Ç©Ç»Ç©Ç¡ÇΩÇÁNORMALÇ…ñﬂÇÈ
 				chaseTimer += Time::DeltaTime();
-			if (chaseTimer >= 4)
+			if (chaseTimer >= 300)
 			{
 				state_ = ESTATE::ESCAPE;
 				chaseTimer = 0.0f;
@@ -225,8 +233,18 @@ void Enemy::Draw()
 {
 	//èc48 ,â°48
 	Rect rect{ pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE };
-	DrawRectExtendGraph(pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE, animTip_[nowFrame_] * imageSize_, dirArray_[nowDir_] * imageSize_, imageSize_, imageSize_, hImage_, TRUE);
+	
 
+	if (!route.empty())
+	{
+		for (int i = 0;i < route.size() - 1;i++)
+		{
+			//DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, GetColor(0, 0, 125), FALSE);
+
+			DrawBox(route[i].x * CHA_SIZE, route[i].y * CHA_SIZE, route[i].x * CHA_SIZE + (CHA_SIZE), route[i].y * CHA_SIZE + (CHA_SIZE), GetColor(0, 255, 0), TRUE);
+		}
+	}
+	DrawRectExtendGraph(pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE, animTip_[nowFrame_] * imageSize_, dirArray_[nowDir_] * imageSize_, imageSize_, imageSize_, hImage_, TRUE);
 	ImGui::Begin("state");
 	ImGui::Text("%s", text);
 	ImGui::End();

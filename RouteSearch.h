@@ -19,7 +19,9 @@ public:
     //内部リンケージがある型を含むシンボルは定義されていません
     void SetStartTile(Point startTile);
     void SetEndTile(Point endTile);
-    Point CalculateRoute();
+    
+    std::vector<Point> CalculateRoute();
     Point GetMovement();
+    Point GetMovement(Point start);
 };
 

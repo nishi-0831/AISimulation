@@ -4,14 +4,30 @@
 #include <math.h>
 void RouteSearch::SetStartTile(Point startTile) { startTile_ = startTile; }
 void RouteSearch::SetEndTile(Point endTile) { endTile_ = endTile; }
-Point RouteSearch::CalculateRoute()
+
+
+std::vector<Point> RouteSearch::CalculateRoute()
 {
-    return Point::Add(startTile_, GetMovement());
+    std::vector<Point> ret;
+    Point point = startTile_;
+    //end‚ÉŽŠ‚é‚Ü‚Å
+    while (!(Point::Equal(point, endTile_)))
+    {
+        point = Point::Add(point,GetMovement(point));
+        ret.push_back(point);
+    }
+
+    return ret;
 }
 
 Point RouteSearch::GetMovement()
 {
-    Point movement = Point::Sub(endTile_, startTile_);
+    return GetMovement(startTile_);
+}
+
+Point RouteSearch::GetMovement(Point start)
+{
+    Point movement = Point::Sub(endTile_, start);
     Point ret{ 0,0 };
     if ((movement.x != 0))
     {

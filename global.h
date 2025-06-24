@@ -1,77 +1,121 @@
-#pragma once
-#include <cmath>
+#pragma once  
+#include <cmath>  
+#include <vector>  
+#include <functional>   
+
+// 二次元ベクトル(整数)  
+struct Point  
+{  
+   int x;  
+   int y;  
+
+   // aとbを足すよ  
+   static Point Add(Point a, Point b)  
+   {  
+       a.x += b.x;  
+       a.y += b.y;  
+       return a;  
+   }  
+
+   // aからbを引くよ  
+   static Point Sub(Point a, Point b)  
+   {  
+       a.x -= b.x;  
+       a.y -= b.y;  
+       return a;  
+   }  
+
+   static bool Equal(Point a, Point b)  
+   {  
+       return (a.x == b.x && a.y == b.y);  
+   }  
+
+   static int ManhattanDistance(Point a, Point b)  
+   {  
+       // 2点 (x1, y1) と (x2, y2) 間のマンハッタン距離は、  
+       // |x1 - x2| + |y1 - y2| で計算されます  
+       return abs(a.x - b.x) + abs(a.y - b.y);  
+   }  
+
+   
+   bool operator<(const Point& other) const  
+   {  
+       return std::tie(x, y) < std::tie(other.x, other.y);  
+   } 
+   bool operator==(const Point& other) const
+   {
+       return (x == other.x && y == other.y);
+   }
+};  
 
 
+namespace std  
+{  
+   template <>  
+   struct hash<Point>  
+   {  
+       size_t operator()(const Point& p) const  
+       {  
+           //(18,0)と(0,18)が同じハッシュ値にならないように
+           return hash<int>()(p.x) ^ (hash<int>()(p.y) << 1);  
+       }  
+   };  
+}  
 
-	//二次元ベクトル(整数)
-	struct Point
-	{
-		int x;
-		int y;
-		//aとbを足すよ
-		static Point Add(Point a, Point b)
-		{
-			a.x += b.x;
-			a.y += b.y;
-			return a;
-		}
-		//aからbを引くよ
-		static Point Sub(Point a, Point b)
-		{
-			a.x -= b.x;
-			a.y -= b.y;
-			return a;
-		}
-		static bool Equal(Point a, Point b)
-		{
-			return (a.x == b.x && a.y == b.y);
-		}
-		static int ManhattanDistance(Point a, Point b)
-		{
-			//2点 (x1, y1) と (x2, y2) 間のマンハッタン距離は、
-			// |x1 - x2| + |y1 - y2| で計算されます
-			return abs(a.x - b.x) + abs(a.y - b.y);
-		}
+// 二次元ベクトル(浮動小数点数)  
+struct Pointf  
+{  
+   float x;  
+   float y;  
+};  
 
-	};
-	
-	//二次元ベクトル(浮動小数点数)
-	struct Pointf
-	{
-		float x;
-		float y;
-	};
+// 矩形(くけい)を表すよ  
+struct Rect  
+{  
+   int x; // 左上x  
+   int y; // 左上y  
+   int w; // 幅  
+   int h; // 高さ  
+};  
 
-	//矩形(くけい)を表すよ
-	struct Rect
-	{
-		int x;//左上x
-		int y;//左上y
-		int w;//幅
-		int h;//高さ
-	};
+enum DIR  
+{  
+   UP,  
+   DOWN,  
+   LEFT,  
+   RIGHT,  
+   NONE,  
+   MAX_DIR  
+};  
 
-	enum DIR
-	{
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT,
-		NONE,
-		MAX_DIR
-	};
+enum class Tile  
+{  
+   ROAD,  
+   WALL,  
+   ESCAPEPOINT  
+};  
 
-	static const Point moveDirArray[(int)DIR::MAX_DIR] = {
-			{0,-1},
-			{0,1},
-			{-1,0},
-			{1,0},
-			{0,0}
-	};
+static const Point moveDirArray[(int)DIR::MAX_DIR] = {  
+   {0, -1},  
+   {0, 1},  
+   {-1, 0},  
+   {1, 0},  
+   {0, 0}  
+};  
+
+const Point escapePoint{18, 15};  
+const std::vector<Point> wallPoint
+{
+    {5,5},
+    {5,6},
+    {5,7},
+    {5,8},
+    {5,9},
+};
 
 
+const int CHA_SIZE = 32; // キャラクターのサイズ  
 
-	const int CHA_SIZE = 32;//キャラクターのサイズ
-
-	const int STAGE_WIDTH = 39;
-	const int STAGE_HEIGHT = 21;
+const int STAGE_WIDTH = 39;  
+const int STAGE_HEIGHT = 21;
+  

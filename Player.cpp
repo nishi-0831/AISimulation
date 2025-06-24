@@ -2,6 +2,7 @@
 #include "Input.h"
 #include <algorithm>
 #include "ImGuiSample.h"
+#include "Stage.h"
 
 namespace
 {
