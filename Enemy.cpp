@@ -27,17 +27,51 @@ namespace
 	const char* text;
 
 	//Point escapePoint{10,10};
+
+	std::vector<Point> viewPoint;
+	const int VIEW_DIST = 5;
 }
+
+bool Enemy::CanSeePlayer(Player* p)
+{
+	
+	for (int i = 0; i < VIEW_DIST; i++)
+	{
+		if (viewPoint[i] == p->GetTilePos())
+		{
+			viewPoint.clear();
+			return true;
+		}
+	}
+	return false;
+}
+
 void Enemy::UpdateNormal()
 {
 	SetDir();
 	Move();
+	viewPoint.clear();
+	Point move = moveDirArray[nowDir_];
+	for (int i = 0; i < VIEW_DIST; i++)
+	{
+		viewPoint.push_back(Point::Add(tile_, move));
+		move = Point::Add(move, moveDirArray[nowDir_]);
+	}
+#if 0
 	//プレイヤーとのマンハッタン距離がTHRESHOLD_DISTより小さくなったら
 	int manhattanDistance = Point::ManhattanDistance(tile_, p->GetTilePos());
 	if (manhattanDistance < THRESHOLD_DIST)
 	{
 		state_ = ESTATE::CHASE;
 	}
+#else
+	//センサーがあったら
+	if (CanSeePlayer(p))
+	{
+		state_ = ESTATE::CHASE;
+	}
+#endif
+
 }
 void Enemy::UpdateChase()
 {
@@ -55,6 +89,15 @@ void Enemy::UpdateChase()
 	Point movement = routeSearch->GetMovement();
 	tile_ = Point::Add(tile_, movement);
 	route = routeSearch->CalculateRoute();
+	for (auto& r : route)
+	{
+		Stage* stage = Stage::GetInstance();
+		if (stage->stage_[r] == Tile::WALL)
+		{
+			route.clear();
+			state_ = ESTATE::NORMAL;
+		}
+	}
 	SetDir(movement);
 
 
@@ -143,7 +186,8 @@ void Enemy::Move()
 		tileCopy.x += moveDirArray[nowDir_].x;
 		tileCopy.y += moveDirArray[nowDir_].y;
 		//外枠ならもう一回
-		if (IsOutOfStage(tileCopy.x, tileCopy.y))
+		//if (IsOutOfStage(tileCopy.x, tileCopy.y))
+		if(Stage::GetInstance()->stage_[tileCopy] == Tile::WALL)
 		{
 			flag = false;
 			//SetDir();
@@ -244,8 +288,13 @@ void Enemy::Draw()
 			DrawBox(route[i].x * CHA_SIZE, route[i].y * CHA_SIZE, route[i].x * CHA_SIZE + (CHA_SIZE), route[i].y * CHA_SIZE + (CHA_SIZE), GetColor(0, 255, 0), TRUE);
 		}
 	}
+	for (auto& v : viewPoint)
+	{
+		DrawBox(v.x * CHA_SIZE, v.y * CHA_SIZE, v.x * CHA_SIZE + (CHA_SIZE), v.y * CHA_SIZE + (CHA_SIZE), GetColor(0, 255, 0), TRUE);
+	}
 	DrawRectExtendGraph(pos_.x, pos_.y, pos_.x + CHA_SIZE, pos_.y + CHA_SIZE, animTip_[nowFrame_] * imageSize_, dirArray_[nowDir_] * imageSize_, imageSize_, imageSize_, hImage_, TRUE);
 	ImGui::Begin("state");
 	ImGui::Text("%s", text);
 	ImGui::End();
 }
+

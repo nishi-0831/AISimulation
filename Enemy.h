@@ -3,6 +3,7 @@
 #include "GameObject2D.h"
 #include "global.h"
 
+class Player;
 class RouteSearch;
 namespace
 {
@@ -34,5 +35,6 @@ public:
 	void Move() override;
 	void Update() override;
 	void Draw() override;
+	bool CanSeePlayer(Player *p);
 };
 
