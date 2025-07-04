@@ -94,6 +94,6 @@ bool Stage::IsWall(Point point)
 	}
 	else
 	{
-		false;
+		return false;
 	}
 }

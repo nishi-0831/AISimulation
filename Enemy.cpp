@@ -38,7 +38,7 @@ namespace
 bool Enemy::CanSeePlayer(Player* p)
 {
 	
-	for (int i = 0; i < VIEW_DIST; i++)
+	for (int i = 0; i < viewPoint.size(); i++)
 	{
 		if (viewPoint[i] == p->GetTilePos())
 		{
