@@ -26,4 +26,5 @@ public:
     ~Stage();
     void Update() override;
     void Draw() override;
+    bool IsWall(Point point);
 };

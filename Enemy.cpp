@@ -30,6 +30,9 @@ namespace
 
 	std::vector<Point> viewPoint;
 	const int VIEW_DIST = 5;
+
+	const int HORIZON_VIEW = VIEW_DIST -1;
+	
 }
 
 bool Enemy::CanSeePlayer(Player* p)
@@ -46,17 +49,103 @@ bool Enemy::CanSeePlayer(Player* p)
 	return false;
 }
 
+bool Enemy::IsInStage(Point point)
+{
+	bool ret = false;
+	if (point.x >= 0 && point.x < STAGE_WIDTH)
+	{
+		if (point.y >= 0 && point.y < STAGE_HEIGHT)
+		{
+			ret = true;
+		}
+	}
+	return ret;
+}
+
+void Enemy::SafePushViewPoint(Point point)
+{
+	if (IsInStage(point))
+	{
+		if (!Stage::GetInstance()->IsWall(point))
+		{
+			viewPoint.push_back(point);
+		}
+	}
+}
+
+
+
 void Enemy::UpdateNormal()
 {
 	SetDir();
 	Move();
 	viewPoint.clear();
 	Point move = moveDirArray[nowDir_];
+	Point movePoint = Point::Add(tile_, move);
+	//自身から5マス先へ伸ばしてるよ
 	for (int i = 0; i < VIEW_DIST; i++)
 	{
-		viewPoint.push_back(Point::Add(tile_, move));
-		move = Point::Add(move, moveDirArray[nowDir_]);
+		
+		if (movePoint.x >= 0 && movePoint.x < STAGE_WIDTH)
+		{
+			if (movePoint.y >= 0 && movePoint.y < STAGE_HEIGHT)
+			{
+				//movePointがステージの中
+				if (Stage::GetInstance()->stage_[movePoint] != Tile::WALL)
+				{
+					viewPoint.push_back(movePoint);
+					//viewPoint.push_back(Point::Add(tile_, movePoint));
+					movePoint = Point::Add(movePoint, moveDirArray[nowDir_]);
+				}
+				
+			}
+		}
 	}
+
+	
+	int viewPointSizeBefore = viewPoint.size();
+	int yoko = viewPointSizeBefore -1;
+	for (int i = 0; i < yoko; i++)
+	{
+		//上下か、左右向きか
+
+		//上下
+		if (nowDir_ == DIR::DOWN || nowDir_ == DIR::UP)
+		{
+			//上下ならxに展開
+			Point p = viewPoint[i];
+			for (int j = yoko;  j > 0; j--)
+			{
+				
+				Point yokoPoint1 = Point::Add(p, Point{ j,0 });
+				Point yokoPoint2 = Point::Add(p, Point{ -j,0 });
+
+				SafePushViewPoint(yokoPoint1);
+				SafePushViewPoint(yokoPoint2);
+				
+				
+
+			}
+		}
+		else if (nowDir_ == DIR::LEFT || nowDir_ == DIR::RIGHT)
+		{
+			//yに展開
+			Point p = viewPoint[i];
+			for (int j = yoko; j > 0; j--)
+			{
+				//Point yokoPoint = Point::Add(p, Point{ j,0 });
+				Point yokoPoint1 = Point::Add(p, Point{ 0, j });
+				Point yokoPoint2 = Point::Add(p, Point{ 0, -j });
+				
+				SafePushViewPoint(yokoPoint1);
+				SafePushViewPoint(yokoPoint2);
+			}
+		}
+		//IsInStage
+		--yoko;
+	}
+
+
 #if 0
 	//プレイヤーとのマンハッタン距離がTHRESHOLD_DISTより小さくなったら
 	int manhattanDistance = Point::ManhattanDistance(tile_, p->GetTilePos());
@@ -128,8 +217,10 @@ Enemy::Enemy()
 	srand((unsigned int)time(NULL)); // 現在時刻の情報で初期化
 
 
-	tile_.x = GetRand(RAND_MAX) % (STAGE_WIDTH-1) + 1;
-	tile_.y = GetRand(RAND_MAX) % (STAGE_HEIGHT-1) + 1;
+	/*tile_.x = GetRand(RAND_MAX) % (STAGE_WIDTH-1) + 1;
+	tile_.y = GetRand(RAND_MAX) % (STAGE_HEIGHT-1) + 1;*/
+
+	tile_ = Point{ 4,5 };
 
 	pos_ = Point({ tile_.x * CHA_SIZE,tile_.y * CHA_SIZE });
 

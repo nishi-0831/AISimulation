@@ -36,5 +36,8 @@ public:
 	void Update() override;
 	void Draw() override;
 	bool CanSeePlayer(Player *p);
+
+	bool IsInStage(Point point);
+	void SafePushViewPoint(Point point);
 };
 

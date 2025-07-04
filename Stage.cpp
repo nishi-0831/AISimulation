@@ -85,3 +85,15 @@ void Stage::Draw()
 	}
 
 }
+
+bool Stage::IsWall(Point point)
+{
+	if (stage_[point] == Tile::WALL)
+	{
+		return true;
+	}
+	else
+	{
+		false;
+	}
+}
