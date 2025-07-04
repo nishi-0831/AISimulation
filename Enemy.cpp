@@ -104,8 +104,8 @@ void Enemy::UpdateNormal()
 
 	
 	int viewPointSizeBefore = viewPoint.size();
-	int yoko = viewPointSizeBefore -1;
-	for (int i = 0; i < yoko; i++)
+	int horizonView = viewPointSizeBefore -1;
+	for (int i = 0; i < viewPointSizeBefore; i++)
 	{
 		//ã‰º‚©A¶‰EŒü‚«‚©
 
@@ -114,7 +114,7 @@ void Enemy::UpdateNormal()
 		{
 			//ã‰º‚È‚çx‚É“WŠJ
 			Point p = viewPoint[i];
-			for (int j = yoko;  j > 0; j--)
+			for (int j = horizonView;  j > 0; j--)
 			{
 				
 				Point yokoPoint1 = Point::Add(p, Point{ j,0 });
@@ -122,16 +122,13 @@ void Enemy::UpdateNormal()
 
 				SafePushViewPoint(yokoPoint1);
 				SafePushViewPoint(yokoPoint2);
-				
-				
-
 			}
 		}
 		else if (nowDir_ == DIR::LEFT || nowDir_ == DIR::RIGHT)
 		{
 			//y‚É“WŠJ
 			Point p = viewPoint[i];
-			for (int j = yoko; j > 0; j--)
+			for (int j = horizonView; j > 0; j--)
 			{
 				//Point yokoPoint = Point::Add(p, Point{ j,0 });
 				Point yokoPoint1 = Point::Add(p, Point{ 0, j });
@@ -142,7 +139,7 @@ void Enemy::UpdateNormal()
 			}
 		}
 		//IsInStage
-		--yoko;
+		--horizonView;
 	}
 
 
