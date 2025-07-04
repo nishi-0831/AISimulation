@@ -2,10 +2,18 @@
 #include "Library/GameObject.h"
 #include "GameObject2D.h"
 #include "global.h"
-
+#include "ImGuiSample.h"
+#include <map>
+#include <functional>
+class State;
 class RouteSearch;
 namespace
 {
+	enum UPDATESTATE
+	{
+		AUTO,
+		DEBUG
+	};
 	enum ESTATE
 	{
 		NORMAL,
@@ -24,7 +32,10 @@ class Enemy :
 	void UpdateChase();
 	void UpdateEscape();
 	RouteSearch* routeSearch;
-	ESTATE state_ = ESTATE::NORMAL; // åªç›ÇÃèÛë‘
+	//std::map<ESTATE, std::function<void()>> stateFunc_;
+	std::vector<State*> eState_;
+	ESTATE currentEstate_ = ESTATE::NORMAL; // åªç›ÇÃèÛë‘
+	UPDATESTATE updateState_ = UPDATESTATE::AUTO;
 public:
 	Enemy();
 	~Enemy();
@@ -34,5 +45,6 @@ public:
 	void Move() override;
 	void Update() override;
 	void Draw() override;
+	bool isUpdateCommandReceived_;
 };
 

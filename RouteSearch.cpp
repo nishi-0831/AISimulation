@@ -1,7 +1,8 @@
 #include "RouteSearch.h"
 #include "global.h"
 #include <vector>
-
+#include <cassert>
+#include <cmath>
 void RouteSearch::SetStartTile(Point startTile) { startTile_ = startTile; }
 void RouteSearch::SetEndTile(Point endTile) { endTile_ = endTile; }
 Point RouteSearch::CalculateRoute()
@@ -15,50 +16,19 @@ Point RouteSearch::CalculateRoute()
     //1 ‚©‚ç 5
     //5-1=4
     //1,2,3,4
-    Point movement = Point::Sub(endTile_, startTile_);
-
-    //std::vector<Point> route;
-    //route.push_back(startTile_.x movement.x)
+    Point distance = Point::Sub(endTile_, startTile_);
     
-    if ((movement.x != startTile_.x) && (movement.y != startTile_.y))
+    Point movement = Point{ 0,0 };
+    if (distance.x != 0)
     {
-        if (movement.x > 0)
-        {
-            startTile_.x += 1;
-        }
-        else
-        {
-            startTile_.x += -1;
-        }
-        if (movement.y > 0)
-        {
-            startTile_.y += 1;
-        }
-        else
-        {
-            startTile_.y += -1;
-        }
-        //route.push_back(Point::Sub(startTile_, movement));
-        return startTile_;
+        movement.x = distance.x / std::abs(distance.x);
     }
-    //return route;
-    /*Point point = {0,0};
-    if (movement.x > 0)
+    if (distance.y != 0)
     {
-        point.x = 1;
+        movement.y = distance.y / std::abs(distance.y);
     }
-    else if (movement.x < 0)
-    {
-        point.x = -1;
-    }
-
-    if (movement.y > 0)
-    {
-        point.y = 1;
-    }
-    else if (movement.y < 0)
-    {
-        point.y = -1;
-    }*/
-    //route.push_back(Point::Add(movement,))
+    Point ret = movement + startTile_;
+    assert(ret.x >= 0);
+    assert(ret.y >= 0);
+    return ret;
 }

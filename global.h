@@ -9,6 +9,22 @@
 		int x;
 		int y;
 		//aとbを足すよ
+		Point operator+(const Point& rhs)
+		{
+			return Point{ x + rhs.x, y + rhs.y };
+		}
+		Point operator-(const Point& rhs)
+		{
+			return Point{ x - rhs.x, y - rhs.y };
+		}
+		Point operator*(const int rhs)
+		{
+			return Point{ x * rhs, y * rhs };
+		}
+		Point operator/(const int rhs)
+		{
+			return Point{ x / rhs, y / rhs };
+		}
 		static Point Add(Point a, Point b)
 		{
 			a.x += b.x;
@@ -22,7 +38,10 @@
 			a.y -= b.y;
 			return a;
 		}
-
+		static Point Abs(Point point)
+		{
+			return Point{ abs(point.x),abs(point.y) };
+		}
 		static int ManhattanDistance(Point a, Point b)
 		{
 			//2点 (x1, y1) と (x2, y2) 間のマンハッタン距離は、
