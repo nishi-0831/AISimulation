@@ -1,6 +1,26 @@
 #include "Stage.h"
 #include "global.h"
+#include "ImGuiSample.h"
 
+class Entity
+{
+private:
+public:
+	int id;
+	//void Show(const char* name) { ImGui::InputInt(name, &id); }
+};
+class Plane : public Entity
+{
+public:
+	int hp;
+	float speed;
+};
+namespace
+{
+	Point point = { 10,10 };
+	int i = 1;
+
+}
 
 Stage* Stage::instance_ = nullptr;
 Stage::Stage()
@@ -41,6 +61,11 @@ void Stage::Update()
 
 void Stage::Draw()
 {
+	ImGui::Begin("label");
+	ImGuiSample::ShowInspector(&point,"a");
+	//ImGuiSample::ShowInspector(i);
+	ImGui::End();
+
 	//ŠO˜g‚Ì•`‰æ
 	//DrawBox(0, 0, CHA_SIZE * (STAGE_WIDTH - 1), CHA_SIZE * (STAGE_HEIGHT-1), GetColor(0, 155, 255), false,7);
 	//DrawBox(0, 0, Screen::WIDTH, Screen::HEIGHT, GetColor(200, 255, 255), FALSE);

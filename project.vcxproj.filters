@@ -56,6 +56,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject2D.cpp" />
     <ClCompile Include="ImGuiSample.cpp" />
+    <ClCompile Include="RouteSearch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject2D.h" />
     <ClInclude Include="ImGuiSample.h" />
+    <ClInclude Include="RouteSearch.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

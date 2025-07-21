@@ -2,6 +2,7 @@
 #include <cmath>  
 #include <vector>  
 #include <functional>   
+#include "visit_struct/visit_struct.hpp"
 
 // “ñŸŒ³ƒxƒNƒgƒ‹(®”)  
 struct Point  
@@ -47,6 +48,7 @@ struct Point
        return (x == other.x && y == other.y);
    }
 };  
+
 
 
 namespace std  
