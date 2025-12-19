@@ -12,9 +12,9 @@ PlayScene::PlayScene()
 	//Stage* stage = new Stage();
 	//new Stage();
 	Stage::GetInstance();
-	new Player();
-	new Enemy();
-	//Time::Init();
+	//new Player();
+	//new Enemy();
+	Time::Init();
 }
 
 PlayScene::~PlayScene()

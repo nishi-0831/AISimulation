@@ -34,15 +34,15 @@ namespace ImGuiSample
 template <typename T>
 struct has_custom_show {
 private:
-    template <typename U>
-    static auto test(int) -> decltype(ImGuiSample::Show(std::declval<const char*>(), std::declval<U>()), std::true_type{});
+	template <typename U>
+	static auto test(int) -> decltype(ImGuiSample::Show(std::declval<const char*>(), std::declval<U>()), std::true_type{});
 
-    template <typename>
-    static std::false_type test(...);
+	template <typename>
+	static std::false_type test(...);
 
-    using V = refl::trait::remove_qualifiers_t<T>;
+	using V = refl::trait::remove_qualifiers_t<T>;
 public:
-    static constexpr bool value = decltype(test<V>(0))::value;
+	static constexpr bool value = decltype(test<V>(0))::value;
 };
 
 template <typename T>

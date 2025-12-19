@@ -16,8 +16,10 @@ namespace
 	float animInterval = 0.3f;
 }
 Player::Player()
-	:GameObject2D(), tile_({ 2,2 })
+	:GameObject2D()
 {
+	tile_ = Stage::GetInstance()->start_;
+	
 	imageSize_ = 48;
 	dirArray_ = { 3,0,1,2,0 };
 	animTip_ = { 0,1,2,1 }; // アニメーションのコマ番号

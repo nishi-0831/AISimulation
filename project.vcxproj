@@ -91,7 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(DXLIB);D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\visit_struct-master\include\visit_struct;C:\refl-cpp-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DXLIB);D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(REFL_CPP)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -124,7 +124,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(DXLIB);D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;C:\visit_struct-master\include\visit_struct;C:\refl-cpp-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DXLIB);D:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(REFL_CPP)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -135,6 +135,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BFS.h" />
+    <ClInclude Include="Dijkstra.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject2D.h" />
     <ClInclude Include="global.h" />
@@ -157,8 +159,10 @@
     <ClInclude Include="Library\SceneManager.h" />
     <ClInclude Include="Library\Time.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Route.h" />
     <ClInclude Include="RouteSearch.h" />
     <ClInclude Include="Source\BootScene.h" />
+    <ClInclude Include="Source\GridBFS.h" />
     <ClInclude Include="Source\Screen.h" />
     <ClInclude Include="Source\PlayScene.h" />
     <ClInclude Include="Source\SceneFactory.h" />
@@ -166,6 +170,7 @@
     <ClInclude Include="Stage.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Dijkstra.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject2D.cpp" />
     <ClCompile Include="ImGuiSample.cpp" />

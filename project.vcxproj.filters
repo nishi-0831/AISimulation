@@ -57,6 +57,7 @@
     <ClCompile Include="GameObject2D.cpp" />
     <ClCompile Include="ImGuiSample.cpp" />
     <ClCompile Include="RouteSearch.cpp" />
+    <ClCompile Include="Dijkstra.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -126,6 +127,10 @@
     <ClInclude Include="GameObject2D.h" />
     <ClInclude Include="ImGuiSample.h" />
     <ClInclude Include="RouteSearch.h" />
+    <ClInclude Include="Source\GridBFS.h" />
+    <ClInclude Include="BFS.h" />
+    <ClInclude Include="Route.h" />
+    <ClInclude Include="Dijkstra.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

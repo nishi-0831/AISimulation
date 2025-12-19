@@ -12,6 +12,7 @@
 #include <vector>
 #include "ImGui/imgui.h"
 #include "Stage.h"
+#include "BFS.h"
 #define test 1
 namespace
 {
@@ -26,18 +27,46 @@ namespace
 	std::vector<Point> route;
 	const char* text;
 
-	//Point escapePoint{10,10};
-
 	std::vector<Point> viewPoint;
 	const int VIEW_DIST = 5;
 
 	const int HORIZON_VIEW = VIEW_DIST -1;
 	
+	Point GetDistPoint(std::vector<RouteTile>& routeTiles,Point dist)
+	{
+		Point movement = Point();
+
+		int index = dist.y * (STAGE_WIDTH ) + dist.x;
+		RouteTile* distRouteTile = &routeTiles[index];
+		float distance = FLT_MAX;
+		Point& from = distRouteTile->from;
+		distance = distRouteTile->distance;
+		if (distance == 0)
+		{
+			return dist;
+		}
+		// distanceが
+		while (distance > 1)
+		{
+			// 次のタイルに変更
+			distRouteTile = &routeTiles[(from.y * STAGE_WIDTH + from.x)];
+			distance = distRouteTile->distance;
+			from = distRouteTile->from;
+			if (from.x == -1 && from.y == -1)
+				break;
+
+		}
+		/*if (distance == 1)
+		{
+			return dist;
+		}*/
+		return distRouteTile->pos;
+	}
 }
+
 
 bool Enemy::CanSeePlayer(Player* p)
 {
-	
 	for (int i = 0; i < viewPoint.size(); i++)
 	{
 		if (viewPoint[i] == p->GetTilePos())
@@ -94,7 +123,6 @@ void Enemy::UpdateNormal()
 				if (Stage::GetInstance()->stage_[movePoint] != Tile::WALL)
 				{
 					viewPoint.push_back(movePoint);
-					//viewPoint.push_back(Point::Add(tile_, movePoint));
 					movePoint = Point::Add(movePoint, moveDirArray[nowDir_]);
 				}
 				
@@ -142,52 +170,35 @@ void Enemy::UpdateNormal()
 		--horizonView;
 	}
 
-
-#if 0
-	//プレイヤーとのマンハッタン距離がTHRESHOLD_DISTより小さくなったら
-	int manhattanDistance = Point::ManhattanDistance(tile_, p->GetTilePos());
-	if (manhattanDistance < THRESHOLD_DIST)
-	{
-		state_ = ESTATE::CHASE;
-	}
-#else
 	//センサーがあったら
 	if (CanSeePlayer(p))
 	{
 		state_ = ESTATE::CHASE;
 	}
-#endif
-
 }
 void Enemy::UpdateChase()
 {
-	if (p->GetTilePos().x == escapePoint.x)
-	{
-		if (p->GetTilePos().y == escapePoint.y)
-		{
-			state_ = ESTATE::ESCAPE;
-		}
-	}
-#if test
-	routeSearch->SetStartTile(tile_);
-	routeSearch->SetEndTile(p->GetTilePos());
+	
+	// 開始点、終了地点を設定
+	Stage* stage = Stage::GetInstance();
 
-	Point movement = routeSearch->GetMovement();
+	std::vector<RouteTile> routeTiles = RouteTileBFS(stage->stage_, tile_);
+
+	Point distPoint = GetDistPoint(routeTiles,p->GetTilePos());
+	
+	Point movement;
+	if (distPoint.x == -1 && distPoint.y == -1)
+	{
+		movement = Point{ 0,0 };
+	}
+	else
+	{
+		movement = Point::Sub(distPoint, tile_);
+	}
 	tile_ = Point::Add(tile_, movement);
 	route = routeSearch->CalculateRoute();
-	for (auto& r : route)
-	{
-		Stage* stage = Stage::GetInstance();
-		if (stage->stage_[r] == Tile::WALL)
-		{
-			route.clear();
-			state_ = ESTATE::NORMAL;
-		}
-	}
+	
 	SetDir(movement);
-
-
-#endif
 }
 void Enemy::UpdateEscape()
 {
@@ -202,7 +213,7 @@ void Enemy::UpdateEscape()
 	}
 }
 Enemy::Enemy()
-	:GameObject2D(),tile_({4,4}),  hImage_{-1}
+	:GameObject2D(),tile_({0,0}),  hImage_{-1}
 {
 	routeSearch = new RouteSearch();
 	p = (Player*)FindGameObject<Player>();
@@ -214,15 +225,10 @@ Enemy::Enemy()
 	srand((unsigned int)time(NULL)); // 現在時刻の情報で初期化
 
 
-	/*tile_.x = GetRand(RAND_MAX) % (STAGE_WIDTH-1) + 1;
-	tile_.y = GetRand(RAND_MAX) % (STAGE_HEIGHT-1) + 1;*/
-
-	tile_ = Point{ 4,5 };
-
 	pos_ = Point({ tile_.x * CHA_SIZE,tile_.y * CHA_SIZE });
 
 	nowDir_ = DIR::LEFT;
-	
+	state_ = ESTATE::CHASE;
 	assert(hImage_ > 0);
 }
 

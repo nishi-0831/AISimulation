@@ -9,7 +9,7 @@ struct Point
 {  
    int x;  
    int y;  
-
+   
    // aとbを足すよ  
    static Point Add(Point a, Point b)  
    {  
@@ -25,6 +25,20 @@ struct Point
        a.y -= b.y;  
        return a;  
    }  
+
+   static Point Multi(Point a, Point b)
+   {
+       a.x *= b.x;
+       a.y *= b.y;
+       return a;
+   }
+
+   static Point Multi(Point a, int b)
+   {
+       a.x *= b;
+       a.y *= b;
+       return a;
+   }
 
    static bool Equal(Point a, Point b)  
    {  
@@ -132,6 +146,6 @@ const std::vector<Point> wallPoint
 
 const int CHA_SIZE = 32; // キャラクターのサイズ  
 
-const int STAGE_WIDTH = 39;  
-const int STAGE_HEIGHT = 21;
+static int STAGE_WIDTH = 15;  
+static int STAGE_HEIGHT = 15;
   
