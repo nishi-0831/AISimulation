@@ -84,7 +84,6 @@ struct Pointf
    float x;  
    float y;  
 };  
-
 // 矩形(くけい)を表すよ  
 struct Rect  
 {  
@@ -110,6 +109,11 @@ enum class Tile
    WALL,  
    ESCAPEPOINT  
 };  
+struct Node
+{
+    int cost;
+    Tile tile;
+};
 
 static const Point moveDirArray[(int)DIR::MAX_DIR] = {  
    {0, -1},  
@@ -146,6 +150,6 @@ const std::vector<Point> wallPoint
 
 const int CHA_SIZE = 32; // キャラクターのサイズ  
 
-static int STAGE_WIDTH = 15;  
-static int STAGE_HEIGHT = 15;
+extern int STAGE_WIDTH; 
+extern int STAGE_HEIGHT;
   

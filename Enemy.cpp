@@ -120,7 +120,7 @@ void Enemy::UpdateNormal()
 			if (movePoint.y >= 0 && movePoint.y < STAGE_HEIGHT)
 			{
 				//movePointがステージの中
-				if (Stage::GetInstance()->stage_[movePoint] != Tile::WALL)
+				if (Stage::GetInstance()->stage_[movePoint].tile != Tile::WALL)
 				{
 					viewPoint.push_back(movePoint);
 					movePoint = Point::Add(movePoint, moveDirArray[nowDir_]);
@@ -281,7 +281,7 @@ void Enemy::Move()
 		tileCopy.y += moveDirArray[nowDir_].y;
 		//外枠ならもう一回
 		//if (IsOutOfStage(tileCopy.x, tileCopy.y))
-		if(Stage::GetInstance()->stage_[tileCopy] == Tile::WALL)
+		if(Stage::GetInstance()->stage_[tileCopy].tile == Tile::WALL)
 		{
 			flag = false;
 			//SetDir();

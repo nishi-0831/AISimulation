@@ -5,6 +5,7 @@
 #include <chrono>
 #include <algorithm>
 #include "BFS.h"
+#include "Dijkstra.h"
 #include <iostream>
 #include <fstream>
 #include <ranges>
@@ -53,6 +54,9 @@ Stage* Stage::instance_ = nullptr;
 Stage::Stage()
 {	
 	LoadMapData();
+	Dijkstra::Init(stage_);
+	auto graph = Dijkstra::GetGraph();
+	
 	//Dig();
 	//routeTiles_ = RouteTileBFS(stage_, point);
 }
@@ -88,7 +92,7 @@ void Stage::Draw()
 		{
 			int color;
 			bool flag = false;
-			switch (stage_[Point{x,y}])
+			switch (stage_[Point{x,y}].tile)
 			{
 			case Tile::ROAD:
 				color = GetColor(0, 0, 125);
@@ -120,7 +124,7 @@ void Stage::Draw()
 
 bool Stage::IsWall(Point point)
 {
-	if (stage_[point] == Tile::WALL)
+	if (stage_[point].tile == Tile::WALL)
 	{
 		return true;
 	}
@@ -169,7 +173,7 @@ void Stage::Dig()
 
 			//stage_.insert(std::make_pair<Point, Tile>({ x,y }, Tile::ROAD));
 
-			stage_[{x, y}] = Tile::WALL;
+			stage_[{x, y}].tile = Tile::WALL;
 			
 		}
 	}
@@ -177,7 +181,7 @@ void Stage::Dig()
 
 
 	// 初期の掘り進めスタート位置
-	stage_[startPoint] = Tile::ROAD;
+	stage_[startPoint].tile = Tile::ROAD;
 	roads.push_back(startPoint);
 
 
@@ -216,7 +220,7 @@ void Stage::DigRecursive(Point start)
 			continue;
 		}
 
-		if (stage_[next] == Tile::ROAD)
+		if (stage_[next].tile == Tile::ROAD)
 		{
 			// すでに掘られていたため以前の場所に戻って別の方向を試す
 			next = prevNext;
@@ -224,10 +228,10 @@ void Stage::DigRecursive(Point start)
 		}
 
 		// 2マス先を掘る			
-		stage_[next] = Tile::ROAD;
+		stage_[next].tile = Tile::ROAD;
 
 		// 1マス先も掘る
-		stage_[Point::Sub(next, dir)] = Tile::ROAD;
+		stage_[Point::Sub(next, dir)].tile = Tile::ROAD;
 
 		// 偶数なら掘り進めましたと記録しておく
 		if (IsEven(next))
@@ -308,22 +312,23 @@ void Stage::LoadMapData()
 						Point point(x, y);
 						if (str == '#')
 						{
-							stage_[point] = Tile::WALL;
+							stage_[point].tile = Tile::WALL;
 						}
 						else if (str == 'S')
 						{
 							start_ = point;
-							stage_[point] = Tile::ROAD;
+							stage_[point].tile = Tile::ROAD;
 						}
 						else if (str == 'G')
 						{
 							end_ = point;
-							stage_[point] = Tile::ROAD;
+							stage_[point].tile = Tile::ROAD;
 						}
 						else if (std::isdigit(str))
 						{
 							weight = str - '0';
-							stage_[point] = Tile::ROAD;
+							stage_[point].cost = weight;
+							stage_[point].tile = Tile::ROAD;
 						}
 						x++;
 					}

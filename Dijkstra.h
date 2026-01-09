@@ -7,21 +7,15 @@ namespace Dijkstra
 {
 	struct Edge
 	{
-		int to;
-		int cost;
-	};
-
-	struct Node
-	{
-		Point pos;
-		//std::list<Node*> children;
-		std::list<Edge*> edges;
-		bool confirmed = false;
-
+		Point point;
 		int cost;
 	};
 
 	using Graph = std::vector<std::vector<Edge>>;
-	Graph graph;
-	void Init(std::unordered_map<Point, Tile>& stage);
+	/// <summary>
+	/// ‚Ç‚±‚Æ‚Ç‚±‚ªŒq‚ª‚Á‚Ä‚¢‚é‚©İ’è‚·‚é
+	/// </summary>
+	/// <param name="stage"></param>
+	void Init(std::unordered_map<Point, Node>& stage);
+	Graph& GetGraph();
 }

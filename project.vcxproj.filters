@@ -58,6 +58,7 @@
     <ClCompile Include="ImGuiSample.cpp" />
     <ClCompile Include="RouteSearch.cpp" />
     <ClCompile Include="Dijkstra.cpp" />
+    <ClCompile Include="global.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />

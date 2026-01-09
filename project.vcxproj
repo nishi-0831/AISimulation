@@ -173,6 +173,7 @@
     <ClCompile Include="Dijkstra.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject2D.cpp" />
+    <ClCompile Include="global.cpp" />
     <ClCompile Include="ImGuiSample.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />

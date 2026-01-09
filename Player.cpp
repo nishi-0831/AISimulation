@@ -75,7 +75,7 @@ void Player::Move()
 	tileCopy.y += move.y;
 	//ŠO˜g‚È‚ç‚à‚¤ˆê‰ñ
 
-	if(Stage::GetInstance()->stage_[tileCopy] == Tile::WALL)
+	if(Stage::GetInstance()->stage_[tileCopy].tile == Tile::WALL)
 	{
 		move = Point({ 0,0 });
 	}

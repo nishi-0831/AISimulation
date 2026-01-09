@@ -1,22 +1,25 @@
 #include "Dijkstra.h"
 
-void Dijkstra::Init(std::unordered_map<Point, Tile>& stage)
+// graph の 一次元目がマス、二次元目がそれに繋がっているマス
+namespace Dijkstra
 {
-	graph.resize(STAGE_WIDTH);
-	for (auto& edges : graph)
-	{
-		edges.resize(STAGE_HEIGHT);
-	}
+	Graph graph;
+}
+void Dijkstra::Init(std::unordered_map<Point, Node>& stage)
+{
+	graph.resize(STAGE_WIDTH * STAGE_HEIGHT);
 
 	for (int x = 0;x < STAGE_WIDTH;x++)
 	{
 		for (int y = 0;y < STAGE_HEIGHT;y++)
 		{
 			Point current{ x,y };
-			Tile tile = stage[current];
+			Node& node = stage[current];
+			Tile tile = node.tile;
 			if (tile == Tile::WALL)
 				continue;
 
+			
 			// 上下左右のマスへのオフセット
 			constexpr Point Offsets[] = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
 			for (const auto& offset : Offsets)
@@ -32,14 +35,26 @@ void Dijkstra::Init(std::unordered_map<Point, Tile>& stage)
 					continue;
 				}
 
+				// オフセット分進んだマス
+				Point newPoint = Point::Add(current,offset);
+
 				// 壁の場合はスキップする
-				if (stage[{nx, ny}] == Tile::WALL)
+				if (stage[newPoint].tile == Tile::WALL)
 				{
 					continue;
 				}
-
+				else
+				{
+					Edge edge = { .point = newPoint,.cost = stage[newPoint].cost};
+					graph[y * STAGE_WIDTH + x].push_back(edge);
+				}
 				
 			}
 		}
 	}
+}
+
+Dijkstra::Graph& Dijkstra::GetGraph()
+{
+	 return graph;
 }

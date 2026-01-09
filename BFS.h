@@ -78,7 +78,7 @@ inline std::vector<std::vector<int>> BFS( std::unordered_map<Point, Tile>& grid,
 	return distances;
 }
 
-inline std::vector<RouteTile> RouteTileBFS(std::unordered_map<Point, Tile>& grid, const Point& start)
+inline std::vector<RouteTile> RouteTileBFS(std::unordered_map<Point, Node>& grid, const Point& start)
 {
 	// グリッドの行数 (高さ)
 	const int H = STAGE_HEIGHT;
@@ -125,7 +125,7 @@ inline std::vector<RouteTile> RouteTileBFS(std::unordered_map<Point, Tile>& grid
 			}
 
 			// 壁の場合はスキップする
-			if (grid[{nx, ny}] == Tile::WALL)
+			if (grid[{nx, ny}].tile == Tile::WALL)
 			{
 				continue;
 			}

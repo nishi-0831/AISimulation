@@ -21,7 +21,7 @@ public:
         }
         return instance_;
     }
-    std::unordered_map<Point, Tile> stage_;
+    std::unordered_map<Point, Node> stage_;
     std::vector<std::vector<int>> distances_;
     std::vector<RouteTile> routeTiles_;
     ~Stage();
