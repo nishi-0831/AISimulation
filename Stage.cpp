@@ -77,14 +77,10 @@ void Stage::Draw()
 	//ImGuiSample::ShowInspector(i);
 	ImGui::End();
 
+	std::vector<int> distance = Dijkstra::GetDistance(start_);
 	//äOògÇÃï`âÊ
 	//DrawBox(0, 0, CHA_SIZE * (STAGE_WIDTH - 1), CHA_SIZE * (STAGE_HEIGHT-1), GetColor(0, 155, 255), false,7);
 	//DrawBox(0, 0, Screen::WIDTH, Screen::HEIGHT, GetColor(200, 255, 255), FALSE);
-
-	//for(auto tile:stage_)
-
-
-	//DrawBox(escapePoint.x * CHA_SIZE, escapePoint.y * CHA_SIZE, (escapePoint.x + 1) * CHA_SIZE, (escapePoint.y + 1) * CHA_SIZE, GetColor(122, 122, 122), TRUE);
 	//ÉXÉeÅ[ÉWÇÃï`âÊ
 	for (int y = 0; y < STAGE_HEIGHT; y++)
 	{
@@ -108,6 +104,10 @@ void Stage::Draw()
 			default:
 				color = GetColor(255, 255, 255);
 			}
+			Node& node = stage_[Point{ .x = x,.y = y }];
+			unsigned int red = GetColor(255, 0, 0);
+			// DrawString(x * CHA_SIZE, y * CHA_SIZE, std::to_string(node.cost).c_str(), red);
+			
 			DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, color, flag);
 			//DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, GetColor(0, 0, 125), FALSE);
 			//äOòg
@@ -313,16 +313,19 @@ void Stage::LoadMapData()
 						if (str == '#')
 						{
 							stage_[point].tile = Tile::WALL;
+							stage_[point].cost = INT_MAX;
 						}
 						else if (str == 'S')
 						{
 							start_ = point;
 							stage_[point].tile = Tile::ROAD;
+							stage_[point].cost = 0;
 						}
 						else if (str == 'G')
 						{
 							end_ = point;
 							stage_[point].tile = Tile::ROAD;
+							stage_[point].cost = 0;
 						}
 						else if (std::isdigit(str))
 						{
