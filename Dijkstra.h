@@ -19,6 +19,9 @@ namespace Dijkstra
 	/// <param name="stage"></param>
 	void Init(std::unordered_map<Point, Node>& stage);
 	void SetStart(const Point& start);
+	void SetTarget(const Point& t);
 	std::vector<int> GetDistance(const Point& start);
+	std::vector<int> GetPath();
+	void UpdateGraph();
 	Graph& GetGraph();
 }

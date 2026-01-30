@@ -8,6 +8,7 @@
 #include "Dijkstra.h"
 #include <iostream>
 #include <fstream>
+#include "Input.h"
 #include <ranges>
 using namespace std;
 namespace views = std::ranges::views;
@@ -53,12 +54,10 @@ bool IsEven(Point p);
 Stage* Stage::instance_ = nullptr;
 Stage::Stage()
 {	
-	LoadMapData();
+	//LoadMapData();
+	Dig();
 	Dijkstra::Init(stage_);
-	auto graph = Dijkstra::GetGraph();
-	
-	//Dig();
-	//routeTiles_ = RouteTileBFS(stage_, point);
+	Dijkstra::SetStart(start_);
 }
 
 Stage::~Stage()
@@ -68,19 +67,19 @@ Stage::~Stage()
 
 void Stage::Update()
 {
+	if (Input::IsKeyDown(KEY_INPUT_SPACE))
+	{
+		Dijkstra::UpdateGraph();
+	}
 }
 
 void Stage::Draw()
 {
 	ImGui::Begin("label");
 	ImGuiSample::ShowInspector(&point,"a");
-	//ImGuiSample::ShowInspector(i);
 	ImGui::End();
 
-	std::vector<int> distance = Dijkstra::GetDistance(start_);
 	//外枠の描画
-	//DrawBox(0, 0, CHA_SIZE * (STAGE_WIDTH - 1), CHA_SIZE * (STAGE_HEIGHT-1), GetColor(0, 155, 255), false,7);
-	//DrawBox(0, 0, Screen::WIDTH, Screen::HEIGHT, GetColor(200, 255, 255), FALSE);
 	//ステージの描画
 	for (int y = 0; y < STAGE_HEIGHT; y++)
 	{
@@ -105,21 +104,33 @@ void Stage::Draw()
 				color = GetColor(255, 255, 255);
 			}
 			Node& node = stage_[Point{ .x = x,.y = y }];
-			unsigned int red = GetColor(255, 0, 0);
-			// DrawString(x * CHA_SIZE, y * CHA_SIZE, std::to_string(node.cost).c_str(), red);
-			
 			DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, color, flag);
-			//DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, GetColor(0, 0, 125), FALSE);
-			//外枠
-			/*if (x == 0 || x == STAGE_WIDTH - 1 || y == 0 || y == STAGE_HEIGHT - 1)
-			{
-				DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, GetColor(255, 255, 255), TRUE);	
-			}*/
-			
+
 		}
 	}
+	DrawDistance();
 	int color = GetColor(255, 0, 0);
-	DrawBox(startPoint.x * CHA_SIZE, startPoint.y * CHA_SIZE, (startPoint.x + 1) * CHA_SIZE, (startPoint.y + 1) * CHA_SIZE, color, false);
+	DrawBox(start_.x * CHA_SIZE, start_.y * CHA_SIZE, (start_.x + 1) * CHA_SIZE, (start_.y + 1) * CHA_SIZE, color, false);
+}
+
+void Stage::DrawDistance()
+{
+	unsigned int red = GetColor(255, 0, 0);
+
+	std::vector<int> distance = Dijkstra::GetDistance(start_);
+
+	for (int i = 0; i < distance.size();i++)
+	{
+		int x = i % STAGE_WIDTH;
+		int y = i / STAGE_WIDTH;
+
+		int cost = distance[i];
+		if (cost != INT_MAX)
+		{
+			std::string disStr = std::to_string(cost);
+			DrawString(x * CHA_SIZE, y * CHA_SIZE, disStr.c_str(), red);
+		}
+	}
 }
 
 bool Stage::IsWall(Point point)
@@ -134,21 +145,6 @@ bool Stage::IsWall(Point point)
 	}
 }
 
-void Stage::PoleDown()
-{
-	for (int y = 0; y < STAGE_HEIGHT; y++)
-	{
-		for (int x = 0; x < STAGE_WIDTH; x++)
-		{
-			/*if (x == 0 || x == STAGE_WIDTH - 1 || y == 0 || y == STAGE_HEIGHT - 1)
-				continue;
-
-			stage_[{x, y}] = Tile::WALL;*/
-
-			
-		}
-	}
-}
 
 void Stage::Dig()
 {
@@ -162,28 +158,15 @@ void Stage::Dig()
 	{
 		for (int x = 0; x < STAGE_WIDTH; x++)
 		{
-			if (x == 0 || x == STAGE_WIDTH - 1 || y == 0 || y == STAGE_HEIGHT - 1)
-			{
-				//stage_[{x, y}] = Tile::WALL;
-			}
-			else
-			{
-				//stage_[{x, y}] = Tile::ROAD;
-			}
-
-			//stage_.insert(std::make_pair<Point, Tile>({ x,y }, Tile::ROAD));
-
 			stage_[{x, y}].tile = Tile::WALL;
-			
+			std::uniform_int_distribution<> diceCost(0, 10);
+			stage_[{x, y}].cost = diceCost(gen);
 		}
 	}
 	
-
-
 	// 初期の掘り進めスタート位置
 	stage_[startPoint].tile = Tile::ROAD;
 	roads.push_back(startPoint);
-
 
 	while (roads.empty() == false)
 	{

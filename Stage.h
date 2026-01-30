@@ -27,9 +27,9 @@ public:
     ~Stage();
     void Update() override;
     void Draw() override;
+    void DrawDistance();
     bool IsWall(Point point);
     
-    void PoleDown();
     void Dig();
     void DigRecursive(Point start);
 
