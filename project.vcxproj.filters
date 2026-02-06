@@ -59,6 +59,7 @@
     <ClCompile Include="RouteSearch.cpp" />
     <ClCompile Include="Dijkstra.cpp" />
     <ClCompile Include="global.cpp" />
+    <ClCompile Include="AStar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="BFS.h" />
     <ClInclude Include="Route.h" />
     <ClInclude Include="Dijkstra.h" />
+    <ClInclude Include="AStar.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

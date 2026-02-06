@@ -54,10 +54,11 @@ bool IsEven(Point p);
 Stage* Stage::instance_ = nullptr;
 Stage::Stage()
 {	
-	//LoadMapData();
-	Dig();
+	LoadMapData();
+	//Dig();
 	Dijkstra::Init(stage_);
 	Dijkstra::SetStart(start_);
+	Dijkstra::SetTarget(end_);
 }
 
 Stage::~Stage()
@@ -111,6 +112,7 @@ void Stage::Draw()
 	DrawDistance();
 	int color = GetColor(255, 0, 0);
 	DrawBox(start_.x * CHA_SIZE, start_.y * CHA_SIZE, (start_.x + 1) * CHA_SIZE, (start_.y + 1) * CHA_SIZE, color, false);
+	DrawString(end_.x * CHA_SIZE, end_.y * CHA_SIZE, "end", color);
 }
 
 void Stage::DrawDistance()
@@ -118,7 +120,17 @@ void Stage::DrawDistance()
 	unsigned int red = GetColor(255, 0, 0);
 
 	std::vector<int> distance = Dijkstra::GetDistance(start_);
+	std::vector<int> path = Dijkstra::GetPath();
 
+	for (int i = 0; i < path.size();i++)
+	{
+		int idx = path[i];
+		int x = idx % STAGE_HEIGHT;
+		int y = idx / STAGE_HEIGHT;
+		
+		int color = GetColor(255, 255, 255);
+		DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, color, true);
+	}
 	for (int i = 0; i < distance.size();i++)
 	{
 		int x = i % STAGE_WIDTH;
@@ -176,6 +188,10 @@ void Stage::Dig()
 		// 一回掘ったらスタート位置は削除
 		std::erase(roads, point);
 	}
+
+	std::uniform_int_distribution<> distGoal(0,roadOnly.size() - 1);
+	int idxGoal = distGoal(gen);	
+	end_ = roadOnly[idxGoal];
 }
 
 void Stage::DigRecursive(Point start)
