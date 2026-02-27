@@ -153,3 +153,4 @@ const int CHA_SIZE = 32; // キャラクターのサイズ
 extern int STAGE_WIDTH; 
 extern int STAGE_HEIGHT;
   
+const int COST_MAX = 100;

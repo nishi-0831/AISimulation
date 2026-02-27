@@ -1,29 +1,29 @@
 #pragma once
+#include <queue>
 #include <vector>
+#include <list>
 #include "global.h"
-
 namespace AStar
 {
 	struct Edge
 	{
+		Point point;
 		int cost;
-		Point to;
 	};
-	struct AStarNode
-	{
-		int cost;
-		int distanceToTarget;
-	};
-	bool operator>(const AStarNode& lhs, const AStarNode& rhs)
-	{
-		return (lhs.cost + lhs.distanceToTarget) > (rhs.cost + rhs.distanceToTarget);
-	}
-	bool operator<(const AStarNode& lhs, const AStarNode& rhs)
-	{
-		return rhs > lhs;
-	}
+	
+	using Graph = std::vector<std::vector<Edge>>;
 
-	void Init(const std::unordered_map<Point, Node>& stage);
+	/// <summary>
+	/// ‚Ç‚±‚Æ‚Ç‚±‚ªŒq‚ª‚Á‚Ä‚¢‚é‚©İ’è‚·‚é
+	/// </summary>
+	/// <param name="stage"></param>
+	void Init(std::unordered_map<Point, Node>& stage);
 	void SetStart(const Point& start);
-	void SetTarget(const Point& target);
+	void SetTarget(const Point& t);
+	std::vector<int> GetDistance(const Point& start);
+	std::vector<int> GetPath();
+	std::vector<int> GetGrid();
+	void UpdateGraph();
+	Graph& GetGraph();
+	void InitToTargetDistance();
 }

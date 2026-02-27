@@ -7,7 +7,6 @@ namespace Dijkstra
 	// {距離(コスト)、頂点のインデックス}
 	using Pair = std::pair<int, int>;
 
-	// using Graph = std::vector<std::vector<Edge>>;
 	// 頂点から伸びている辺の配列
 	// graph[0] で、0番目の頂点から伸びている辺を取得できる
 	Graph graph;
@@ -15,7 +14,7 @@ namespace Dijkstra
 	// 降順で並べる。そうすれば昇順で取り出せる
 	std::priority_queue<Pair, std::vector<Pair>, std::greater<Pair>> queue;
 
-	std::vector<int> distances;
+	std::vector<int> costs;
 	// ターゲットの座標
 	Point target;
 
@@ -27,7 +26,7 @@ namespace Dijkstra
 void Dijkstra::Init(std::unordered_map<Point, Node>& stage)
 {
 	graph.resize(STAGE_WIDTH * STAGE_HEIGHT);
-	distances.resize(STAGE_WIDTH * STAGE_HEIGHT, INT_MAX);
+	costs.resize(STAGE_WIDTH * STAGE_HEIGHT, INT_MAX);
 	p.resize(STAGE_WIDTH * STAGE_HEIGHT, -1);
 	for (int x = 0;x < STAGE_WIDTH;x++)
 	{
@@ -79,8 +78,8 @@ void Dijkstra::SetStart(const Point& start)
 	// 開始地点のコストを距離を0とする。
 	queue.emplace(std::make_pair(0, STAGE_WIDTH * start.y + start.x));
 
-	std::fill(distances.begin(), distances.end(), INT_MAX);
-	distances[STAGE_WIDTH * start.y + start.x] = 0;
+	std::fill(costs.begin(), costs.end(), INT_MAX);
+	costs[STAGE_WIDTH * start.y + start.x] = 0;
 }
 
 void Dijkstra::SetTarget(const Point& t)
@@ -90,7 +89,7 @@ void Dijkstra::SetTarget(const Point& t)
 
 std::vector<int> Dijkstra::GetDistance(const Point& start)
 {
-	return distances;
+	return costs;
 }
 
 std::vector<int> Dijkstra::GetPath()
@@ -116,20 +115,20 @@ void Dijkstra::UpdateGraph()
 		// 辺の先にあるノードのインデックス
 		int toIdx = STAGE_WIDTH * edge.point.y + edge.point.x;
 		// そのノードに割り当てられているコストより小さいなら
-		if (cost < distances[toIdx])
+		if (cost < costs[toIdx])
 		{
 			// 直前の頂点を記録
 			p[toIdx] = idx;
 			// コスト更新
-			distances[toIdx] = cost;
+			costs[toIdx] = cost;
 			// 探索キューに入れておく
-			queue.emplace(std::make_pair(distances[toIdx], toIdx));
+			queue.emplace(std::make_pair(costs[toIdx], toIdx));
 		}
 	}
 	// 目標地点のインデックス
 	int targetIdx = target.y * STAGE_WIDTH + target.x;
 	// 目標地点への距離が初期値(INT_MAX)でないなら、到達したということ
-	if (distances[targetIdx] != INT_MAX)
+	if (costs[targetIdx] != COST_MAX)
 	{
 		// ターゲットの直前の頂点から、始点へ遡っていく
 		for (int i = targetIdx; i != -1; i = p[i])

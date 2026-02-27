@@ -5,14 +5,15 @@
 #include <chrono>
 #include <algorithm>
 #include "BFS.h"
-#include "Dijkstra.h"
+#include "AStar.h"
 #include <iostream>
 #include <fstream>
 #include "Input.h"
 #include <ranges>
+#include <filesystem>
 using namespace std;
 namespace views = std::ranges::views;
-
+namespace fs = std::filesystem;
 vector<string> split(const string& _text, const char delimiter = ' ')
 {
 	vector<string> ret;
@@ -56,9 +57,10 @@ Stage::Stage()
 {	
 	LoadMapData();
 	//Dig();
-	Dijkstra::Init(stage_);
-	Dijkstra::SetStart(start_);
-	Dijkstra::SetTarget(end_);
+	AStar::Init(stage_);
+	AStar::SetTarget(end_);
+	AStar::SetStart(start_);
+	AStar::InitToTargetDistance();
 }
 
 Stage::~Stage()
@@ -70,7 +72,7 @@ void Stage::Update()
 {
 	if (Input::IsKeyDown(KEY_INPUT_SPACE))
 	{
-		Dijkstra::UpdateGraph();
+		AStar::UpdateGraph();
 	}
 }
 
@@ -119,14 +121,15 @@ void Stage::DrawDistance()
 {
 	unsigned int red = GetColor(255, 0, 0);
 
-	std::vector<int> distance = Dijkstra::GetDistance(start_);
-	std::vector<int> path = Dijkstra::GetPath();
+	std::vector<int> distance = AStar::GetDistance(start_);
+	std::vector<int> path = AStar::GetPath();
+	std::vector<int> distances = AStar::GetGrid();
 
 	for (int i = 0; i < path.size();i++)
 	{
 		int idx = path[i];
-		int x = idx % STAGE_HEIGHT;
-		int y = idx / STAGE_HEIGHT;
+		int x = idx % STAGE_WIDTH;
+		int y = idx / STAGE_WIDTH;
 		
 		int color = GetColor(255, 255, 255);
 		DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, color, true);
@@ -136,13 +139,18 @@ void Stage::DrawDistance()
 		int x = i % STAGE_WIDTH;
 		int y = i / STAGE_WIDTH;
 
-		int cost = distance[i];
-		if (cost != INT_MAX)
+		int cost = distance[i] + distances[i];
+		int dis = distance[i];
+		
+		if (dis != COST_MAX)
 		{
-			std::string disStr = std::to_string(cost);
+			std::string disStr = std::to_string(dis);
 			DrawString(x * CHA_SIZE, y * CHA_SIZE, disStr.c_str(), red);
+			std::string costStr = std::to_string(cost);
+			DrawString(x * CHA_SIZE + 10, y * CHA_SIZE + 10, costStr.c_str(), red);
 		}
 	}
+	
 }
 
 bool Stage::IsWall(Point point)
@@ -172,7 +180,8 @@ void Stage::Dig()
 		{
 			stage_[{x, y}].tile = Tile::WALL;
 			std::uniform_int_distribution<> diceCost(0, 10);
-			stage_[{x, y}].cost = diceCost(gen);
+			stage_[{x, y}].cost = 0;
+			//stage_[{x, y}].cost = diceCost(gen);
 		}
 	}
 	
@@ -263,23 +272,11 @@ Point Stage::GetRandRoadPos()
 void Stage::LoadMapData()
 {
 	//頑張ってファイル選択ダイアログを出す
-	TCHAR filename[255] = "";
-	OPENFILENAME ifn = { 0 };
-
-	ifn.lStructSize = sizeof(ifn);
-	//ウィンドウのオーナー=親ウィンドウのハンドル
-
-	ifn.hwndOwner = GetMainWindowHandle();
-	ifn.lpstrFilter = "全てのファイル (*.*)\0*.*\0";
-	ifn.lpstrFile = filename;
-	ifn.nMaxFile = 255;
+	fs::path filePath = "Assets/SData.txt";
 
 	//ファイル名はlpstrFileに渡したfilenameに入ってる
-	if (GetOpenFileName(&ifn))
 	{
-		printfDx("ファイルが選択された\n", filename);
-
-		std::ifstream inputfile(filename);
+		std::ifstream inputfile(filePath);
 		if (!inputfile)
 		{
 			std::cerr << "ファイルを開けませんでした。" << std::endl;

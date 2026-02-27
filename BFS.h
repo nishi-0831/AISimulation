@@ -10,7 +10,7 @@
 /// @return スタート地点から各マスまでの最短距離を記録した二次元配列（-1 は未訪問）
 /// @note 出典:『競プロのための標準 C++』
 
-inline std::vector<std::vector<int>> BFS( std::unordered_map<Point, Tile>& grid, const Point& start)
+inline std::vector<std::vector<int>> BFS( std::unordered_map<Point, Tile>& distances, const Point& start)
 {
 	// グリッドの行数 (高さ)
 	const int H = STAGE_HEIGHT;
@@ -19,10 +19,10 @@ inline std::vector<std::vector<int>> BFS( std::unordered_map<Point, Tile>& grid,
 	const int W = STAGE_WIDTH;
 
 	// 各マスまでの最短距離（-1 は未訪問）
-	std::vector<std::vector<int>> distances(H, std::vector<int>(W, -1));
+	std::vector<std::vector<int>> costs(H, std::vector<int>(W, -1));
 
 	// スタート地点の距離は 0 とする
-	distances[start.y][start.x] = 0;
+	costs[start.y][start.x] = 0;
 
 	// 幅優先探索のキュー
 	std::queue<Point> q;
@@ -54,31 +54,31 @@ inline std::vector<std::vector<int>> BFS( std::unordered_map<Point, Tile>& grid,
 			}
 
 			// 壁の場合はスキップする
-			if (grid[{nx,ny}] == Tile::WALL)
+			if (distances[{nx,ny}] == Tile::WALL)
 			{
 				continue;
 			}
 
 			// すでに訪れている場合はスキップする
 			// MEMO: 初めに-1で初期化しており、距離を書き込んだ場合は0以上になるので-1は未訪問
-			if (distances[ny][nx] != -1)
+			if (costs[ny][nx] != -1)
 			{
 				continue;
 			}
 
 			// 新たなマスまでの距離を記録する
 			// MEMO: distances[current.y][current.x] 現在のマスのスタートからの距離。それに1を足している。未探索と隣マスだから
-			distances[ny][nx] = (distances[current.y][current.x] + 1);
+			costs[ny][nx] = (costs[current.y][current.x] + 1);
 
 			// 新たなマスをキューに追加する
 			q.emplace(nx, ny);
 		}
 	}
 
-	return distances;
+	return costs;
 }
 
-inline std::vector<RouteTile> RouteTileBFS(std::unordered_map<Point, Node>& grid, const Point& start)
+inline std::vector<RouteTile> RouteTileBFS(std::unordered_map<Point, Node>& distances, const Point& start)
 {
 	// グリッドの行数 (高さ)
 	const int H = STAGE_HEIGHT;
@@ -125,7 +125,7 @@ inline std::vector<RouteTile> RouteTileBFS(std::unordered_map<Point, Node>& grid
 			}
 
 			// 壁の場合はスキップする
-			if (grid[{nx, ny}].tile == Tile::WALL)
+			if (distances[{nx, ny}].tile == Tile::WALL)
 			{
 				continue;
 			}

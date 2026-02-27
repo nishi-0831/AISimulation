@@ -9,19 +9,19 @@
 /// @return スタート地点から各マスまでの最短距離を記録した二次元配列（-1 は未訪問）
 /// @note 出典:『競プロのための標準 C++』
 
-std::vector<std::vector<int>> GridBFS(const std::vector<std::string>& grid, const Point& start)
+std::vector<std::vector<int>> GridBFS(const std::vector<std::string>& distances, const Point& start)
 {
 	// グリッドの行数 (高さ)
-	const int H = static_cast<int>(grid.size());
+	const int H = static_cast<int>(distances.size());
 
 	// グリッドの列数 (幅)
-	const int W = static_cast<int>(grid[0].size());
+	const int W = static_cast<int>(distances[0].size());
 
 	// 各マスまでの最短距離（-1 は未訪問）
-	std::vector<std::vector<int>> distances(H, std::vector<int>(W, -1));
+	std::vector<std::vector<int>> costs(H, std::vector<int>(W, -1));
 
 	// スタート地点の距離は 0 とする
-	distances[start.y][start.x] = 0;
+	costs[start.y][start.x] = 0;
 
 	// 幅優先探索のキュー
 	std::queue<Point> q;
@@ -51,24 +51,24 @@ std::vector<std::vector<int>> GridBFS(const std::vector<std::string>& grid, cons
 			}
 
 			// 壁の場合はスキップする
-			if (grid[ny][nx] == '#')
+			if (distances[ny][nx] == '#')
 			{
 				continue;
 			}
 
 			// すでに訪れている場合はスキップする
-			if (distances[ny][nx] != -1)
+			if (costs[ny][nx] != -1)
 			{
 				continue;
 			}
 
 			// 新たなマスまでの距離を記録する
-			distances[ny][nx] = (distances[current.y][current.x] + 1);
+			costs[ny][nx] = (costs[current.y][current.x] + 1);
 
 			// 新たなマスをキューに追加する
 			q.emplace(nx, ny);
 		}
 	}
 
-	return distances;
+	return costs;
 }
