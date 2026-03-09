@@ -3,12 +3,6 @@
 #include <queue>
 #include "../global.h"
 
-/// @brief グリッド上の幅優先探索を行い、スタート地点から各マスまでの最短距離を求めます。
-/// @param grid グリッド（'#' は壁、それ以外は通路）
-/// @param start スタート地点の座標
-/// @return スタート地点から各マスまでの最短距離を記録した二次元配列（-1 は未訪問）
-/// @note 出典:『競プロのための標準 C++』
-
 std::vector<std::vector<int>> GridBFS(const std::vector<std::string>& distances, const Point& start)
 {
 	// グリッドの行数 (高さ)

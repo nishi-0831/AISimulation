@@ -141,7 +141,6 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject2D.h" />
     <ClInclude Include="global.h" />
-    <ClInclude Include="ImGuiSample.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
@@ -172,11 +171,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AStar.cpp" />
+    <ClCompile Include="BFS.cpp" />
     <ClCompile Include="Dijkstra.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject2D.cpp" />
     <ClCompile Include="global.cpp" />
-    <ClCompile Include="ImGuiSample.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />

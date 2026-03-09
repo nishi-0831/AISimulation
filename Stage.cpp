@@ -1,11 +1,11 @@
 #include "Stage.h"
 #include "global.h"
-#include "ImGuiSample.h"
 #include <random>
 #include <chrono>
 #include <algorithm>
 #include "BFS.h"
-#include "AStar.h"
+#include "Dijkstra.h"
+#include "BFS.h"
 #include <iostream>
 #include <fstream>
 #include "Input.h"
@@ -29,9 +29,6 @@ vector<string> split(const string& _text, const char delimiter = ' ')
 
 namespace
 {
-	Point point = { 0,0 };
-	int i = 1;
-
 	// 通路の開始位置
 	Point startPoint{ 2,2 };
 	
@@ -55,12 +52,12 @@ bool IsEven(Point p);
 Stage* Stage::instance_ = nullptr;
 Stage::Stage()
 {	
-	LoadMapData();
-	//Dig();
-	AStar::Init(stage_);
-	AStar::SetTarget(end_);
-	AStar::SetStart(start_);
-	AStar::InitToTargetDistance();
+	//LoadMapData();
+	Dig();
+	BFS::Init(stage_);
+	BFS::SetTarget(end_);
+	BFS::SetStart(start_);
+	//Dijkstra::InitToTargetDistance();
 }
 
 Stage::~Stage()
@@ -72,16 +69,12 @@ void Stage::Update()
 {
 	if (Input::IsKeyDown(KEY_INPUT_SPACE))
 	{
-		AStar::UpdateGraph();
+		BFS::UpdateGraph();
 	}
 }
 
 void Stage::Draw()
 {
-	ImGui::Begin("label");
-	ImGuiSample::ShowInspector(&point,"a");
-	ImGui::End();
-
 	//外枠の描画
 	//ステージの描画
 	for (int y = 0; y < STAGE_HEIGHT; y++)
@@ -119,12 +112,25 @@ void Stage::Draw()
 
 void Stage::DrawDistance()
 {
-	unsigned int red = GetColor(255, 0, 0);
+	unsigned int red = GetColor(200, 0, 0);
 
-	std::vector<int> distance = AStar::GetDistance(start_);
-	std::vector<int> path = AStar::GetPath();
-	std::vector<int> distances = AStar::GetGrid();
+	std::vector<int> distance = BFS::GetSearchPoints();
+	std::vector<int> path = BFS::GetPath();
 
+	for (int i = 0; i < distance.size();i++)
+	{
+		int dis = distance[i];
+		int x = dis % STAGE_WIDTH;
+		int y = dis / STAGE_WIDTH;
+
+		
+		if (dis != COST_MAX)
+		{
+			std::string disStr = std::to_string(dis);
+			
+			DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, red, true);			
+		}
+	}
 	for (int i = 0; i < path.size();i++)
 	{
 		int idx = path[i];
@@ -133,22 +139,6 @@ void Stage::DrawDistance()
 		
 		int color = GetColor(255, 255, 255);
 		DrawBox(x * CHA_SIZE, y * CHA_SIZE, (x + 1) * CHA_SIZE, (y + 1) * CHA_SIZE, color, true);
-	}
-	for (int i = 0; i < distance.size();i++)
-	{
-		int x = i % STAGE_WIDTH;
-		int y = i / STAGE_WIDTH;
-
-		int cost = distance[i] + distances[i];
-		int dis = distance[i];
-		
-		if (dis != COST_MAX)
-		{
-			std::string disStr = std::to_string(dis);
-			DrawString(x * CHA_SIZE, y * CHA_SIZE, disStr.c_str(), red);
-			std::string costStr = std::to_string(cost);
-			DrawString(x * CHA_SIZE + 10, y * CHA_SIZE + 10, costStr.c_str(), red);
-		}
 	}
 	
 }

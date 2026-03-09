@@ -26,7 +26,7 @@ namespace Dijkstra
 void Dijkstra::Init(std::unordered_map<Point, Node>& stage)
 {
 	graph.resize(STAGE_WIDTH * STAGE_HEIGHT);
-	costs.resize(STAGE_WIDTH * STAGE_HEIGHT, INT_MAX);
+	costs.resize(STAGE_WIDTH * STAGE_HEIGHT, 100);
 	p.resize(STAGE_WIDTH * STAGE_HEIGHT, -1);
 	for (int x = 0;x < STAGE_WIDTH;x++)
 	{
@@ -78,7 +78,7 @@ void Dijkstra::SetStart(const Point& start)
 	// 開始地点のコストを距離を0とする。
 	queue.emplace(std::make_pair(0, STAGE_WIDTH * start.y + start.x));
 
-	std::fill(costs.begin(), costs.end(), INT_MAX);
+	std::fill(costs.begin(), costs.end(), 100);
 	costs[STAGE_WIDTH * start.y + start.x] = 0;
 }
 

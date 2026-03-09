@@ -1,12 +1,12 @@
 #include "AStar.h"
 #include <queue>
 #include <algorithm>
+#include <span>
 namespace AStar
 {
 	std::vector<int> distances;
 	// {コスト、頂点のインデックス}
 	using Pair = std::pair<int, int>;
-	// using Graph = std::vector<std::vector<Edge>>;
 	// 頂点から伸びている辺の配列
 	// graph[0] で、0番目の頂点から伸びている辺を取得できる
 	Graph graph;
@@ -59,8 +59,7 @@ void AStar::Init(std::unordered_map<Point, Node>& stage)
 		{
 			Point current{ x,y };
 			Node& node = stage[current];
-			Tile tile = node.tile;
-			if (tile == Tile::WALL)
+			if (node.tile == Tile::WALL)
 				continue;
 
 
@@ -145,15 +144,13 @@ void AStar::UpdateGraph()
 		// 辺の先にあるノードのインデックス
 		int toIdx = STAGE_WIDTH * edge.point.y + edge.point.x;
 		
-		// 辺のコスト
-		int cost = edge.cost ;
 		// そのノードに割り当てられているコストより小さいなら
-		if (cost < costs[toIdx])
+		if (costs[idx] < costs[toIdx])
 		{
 			// 直前の頂点を記録
 			p[toIdx] = idx;
 			// コスト更新
-			costs[toIdx] = cost + costs[idx];
+			costs[toIdx] = edge.cost + costs[idx];
 			// 探索キューに入れておく
 			queue.emplace(std::make_pair(costs[toIdx] + distances[toIdx], toIdx));
 		}

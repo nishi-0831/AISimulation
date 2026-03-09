@@ -4,8 +4,6 @@
 #include "../Player.h"
 #include "../Enemy.h"
 #include "../Input.h"
-#include "../ImGuiSample.h"
-//#include "../Library/Time.h"
 
 PlayScene::PlayScene()
 {
